@@ -1,0 +1,13 @@
+name: vcf_to_prot
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - pybedtools=0.8.0
+  - python=3.7.3
+  - pandas=0.25.0
+  - biopython=1.74
+  - pytest
+  - pyteomics=3.5.1
+  - tqdm
