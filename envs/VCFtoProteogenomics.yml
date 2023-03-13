@@ -9,5 +9,4 @@ dependencies:
   - pandas=0.25.0
   - biopython=1.74
   - pytest
-  - pyteomics=3.5.1
   - tqdm
