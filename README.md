@@ -21,7 +21,7 @@ Download the following annotation files from https://www.ensembl.org/info/data/f
 ### 2. Prepare the python environment
 ```
 # use conda to create the environment with the required dependencies
-conda env create -f ../envs/VCFtoProteogenomics.yml
+conda env create -f envs/VCFtoProteogenomics.yml
 ```
 Activate the environement
 ```
