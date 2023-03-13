@@ -41,7 +41,7 @@ def setup_get_cds_pos_case1():
 
 
 def setup_introduce_mut2cds_case1():
-    test_file = "./vcf_to_prot_test_files/cds_ENST00000473637.fasta"
+    test_file = "./VCFtoProteogenomics_test_files/cds_ENST00000473637.fasta"
     cds_file = SeqIO.index(test_file, 'fasta')
     return (cds_file['ENST00000473637'], cds_file['ENST00000473637_c.857:C>T'])
 
@@ -112,7 +112,7 @@ def setup_get_cds_pos_case2():
 
 
 def setup_introduce_mut2cds_case2():
-    test_file = "./vcf_to_prot_test_files/cds_ENST00000473637.fasta"
+    test_file = "./VCFtoProteogenomics_test_files/cds_ENST00000473637.fasta"
     cds_file = SeqIO.index(test_file, 'fasta')
     return (cds_file['ENST00000473637'],
             cds_file['ENST00000473637_c.47:C>CGGGCGGCGGGGCCGG'])
@@ -165,7 +165,7 @@ def setup_get_cds_pos_case3():
 
 
 def setup_introduce_mut2cds_case3():
-    test_file = "./vcf_to_prot_test_files/cds_ENST00000473637.fasta"
+    test_file = "./VCFtoProteogenomics_test_files/cds_ENST00000473637.fasta"
     cds_file = SeqIO.index(test_file, 'fasta')
     return (cds_file['ENST00000473637'], cds_file['ENST00000473637_c.47:del'])
 
@@ -223,7 +223,7 @@ def setup_get_cds_pos_case4():
 
 
 def setup_introduce_mut2cds_case4():
-    test_file = "./vcf_to_prot_test_files/cds_ENST00000588086.fasta"
+    test_file = "./VCFtoProteogenomics_test_files/cds_ENST00000588086.fasta"
     cds_file = SeqIO.index(test_file, 'fasta')
     return (cds_file['ENST00000588086'], cds_file['ENST00000588086_c.28:G>C'])
 
@@ -298,7 +298,7 @@ def setup_get_cds_pos_case5():
 
 
 def setup_introduce_mut2cds_case5():
-    test_file = "./vcf_to_prot_test_files/cds_ENST00000588086.fasta"
+    test_file = "./VCFtoProteogenomics_test_files/cds_ENST00000588086.fasta"
     cds_file = SeqIO.index(test_file, 'fasta')
     return (cds_file['ENST00000588086'],
             cds_file['ENST00000588086_c.2025:T>CACT'])
@@ -375,7 +375,7 @@ def setup_get_cds_pos_case6():
 
 
 def setup_introduce_mut2cds_case6():
-    test_file = "./vcf_to_prot_test_files/cds_ENST00000588086.fasta"
+    test_file = "./VCFtoProteogenomics_test_files/cds_ENST00000588086.fasta"
     cds_file = SeqIO.index(test_file, 'fasta')
     return (cds_file['ENST00000588086'],
             cds_file['ENST00000588086_c>571:TTCA>A'])
@@ -417,7 +417,7 @@ def test_introduce_mut2cds_case6():
 
 
 def test_prepare_vcf():
-    test_file = "./vcf_to_prot_test_files/test.vcf"
+    test_file = "./VCFtoProteogenomics_test_files/test.vcf"
     pyvcf = prepare_vcf(test_file)
     msg = 'prepare_vcf() didn\'t return a BedTool object'
     assert isinstance(pyvcf, pybedtools.bedtool.BedTool), msg
