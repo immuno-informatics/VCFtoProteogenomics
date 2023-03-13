@@ -1,12 +1,12 @@
 import os
 import pytest
 import pandas as pd
-from vcf_to_prot import get_cds_pos
-from vcf_to_prot import introduce_mut2cds
-from vcf_to_prot import get_aminoacid_ref_pos_alt
-from vcf_to_prot import prepare_vcf
-from vcf_to_prot import stop_codon_permutation
-from vcf_to_prot import unspecific_cleavage
+from VCFtoProteogenomics import get_cds_pos
+from VCFtoProteogenomics import introduce_mut2cds
+from VCFtoProteogenomics import get_aminoacid_ref_pos_alt
+from VCFtoProteogenomics import prepare_vcf
+from VCFtoProteogenomics import stop_codon_permutation
+from VCFtoProteogenomics import unspecific_cleavage
 from Bio import SeqIO
 import pybedtools
 import tempfile

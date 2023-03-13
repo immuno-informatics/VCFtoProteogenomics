@@ -1,4 +1,4 @@
-name: vcf_to_prot
+name: VCFtoProteogenomics
 channels:
   - conda-forge
   - bioconda

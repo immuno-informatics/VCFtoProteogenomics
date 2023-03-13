@@ -1,5 +1,5 @@
 """
-    This script generates a protein fasta file out of a variant call format (vcf) file.
+    Generate a protein FASTA file from a variant call format (VCF) file.
     Author: Georges BEDRAN, gbadran_90@live.com
 
 """
@@ -520,84 +520,41 @@ def main(arguments):
         include_id=True)
 
 
-def main_nmd(arguments):
-    gtf_path = arguments.input_gtf[0]  # GTf file
-    vcf_path = arguments.input_vcf[0]  # VCF file
-    CDS_DB_file = arguments.input_cds[0]  # CDS fasta
-    output_file = arguments.output[0]  # output fasta
-    transcript_dict = read_gtf(open(gtf_path))
-    py_vcf = prepare_vcf(vcf_path)
-    py_gtf = prepare_gtf(gtf_path)
-    intersect = py_vcf.intersect(py_gtf, wb=True)
-    # intersect_df = intersect.to_dataframe(header=-1, low_memory=False)
-    intersect_df = intersect.to_dataframe(
-        header=None, disable_auto_names=True, low_memory=False)
-
-    intersect_df = intersect_df[[0, 1, 3, 4, 5, 9, 10, 11]]
-    intersect_df.columns = [
-        'chr', 'pos', 'id', 'ref', 'alt', 'strand', 'frame', 'ann'
-    ]
-    genomic_to_cds_coords(
-        intersect_df,
-        transcript_dict,
-        CDS_DB_file,
-        output_file,
-        include_id=True,
-        to_stop=False)
-    perm_output = '/'.join(
-        output_file.split('/')[:-1]) + 'perumutated_cleaved_'
-    perm_output += output_file.split('/')[-1]
-    stop_codon_permutation(output_file, perm_output, AA)
-
-
 def args():
     parser = argparse.ArgumentParser(
         description=
-        'generates a protein fasta file out of a variant call format (vcf) file'
+        'Generates a protein FASTA file from a variant call format (VCF) file.'
     )
     requiredNamed = parser.add_argument_group('required named arguments')
     requiredNamed.add_argument(
         '-input_gtf',
         nargs=1,
         type=str,
-        help='Path to input GTF fasta',
+        help='Path to the input gene transfer format (GTF) file',
         required=True)
     requiredNamed.add_argument(
         '-input_cds',
         nargs=1,
         type=str,
-        help='Path to input cds fasta',
+        help='Path to the input coding sequence (CDS) FASTA file',
         required=True)
 
     requiredNamed.add_argument(
         '-input_vcf',
         nargs=1,
         type=str,
-        help='Path to input vcf variant file',
-        required=True)
-
-    requiredNamed.add_argument(
-        '-permutation',
-        nargs=1,
-        type=int,
-        choices=[0, 1],
-        help='generate aa permutations for novel stop codons',
+        help='Path to the input VCF file containing the genomic variants',
         required=True)
 
     requiredNamed.add_argument(
         '-output',
         nargs=1,
         type=str,
-        help='Path to output fasta',
+        help='Path to the output protein FASTA file',
         required=True)
     return parser
 
 
 if __name__ == '__main__':
     arguments = args().parse_args()
-    permutation = arguments.permutation[0]
-
-    if permutation:
-        main_nmd(arguments)
-    else:
-        main(arguments)
+    main(arguments)
