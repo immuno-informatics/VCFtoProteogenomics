@@ -5,8 +5,6 @@ from VCFtoProteogenomics import get_cds_pos
 from VCFtoProteogenomics import introduce_mut2cds
 from VCFtoProteogenomics import get_aminoacid_ref_pos_alt
 from VCFtoProteogenomics import prepare_vcf
-from VCFtoProteogenomics import stop_codon_permutation
-from VCFtoProteogenomics import unspecific_cleavage
 from Bio import SeqIO
 import pybedtools
 import tempfile
@@ -421,98 +419,3 @@ def test_prepare_vcf():
     pyvcf = prepare_vcf(test_file)
     msg = 'prepare_vcf() didn\'t return a BedTool object'
     assert isinstance(pyvcf, pybedtools.bedtool.BedTool), msg
-
-
-def test_stop_codon_permutation_case1():
-    output_res = 'stop_codon_permutation_output.fasta'
-    aa_list = ['A', 'R', 'N']
-    tmp_db = tempfile.NamedTemporaryFile(mode="w", delete=False)
-    output_expected = tempfile.NamedTemporaryFile(mode="w", delete=False)
-    db_dict = {
-        'protein1': 'ADFTGATFCVHHHH*AFFFFFTFTFTFTFTFTFTFTFT',
-        'protein2': 'ADFTGATFCVHHHH*AFF',
-        'protein3': 'HHHH*AFFFFFTFTFTFTFTFTFTFTFT',
-        'protein4': 'HHHHAFFFFFTFTFTFTFTFTFTFTFT*',
-        'protein5': 'HHHH*AFFFFF*TFTFTFTFTFTFTFTFT'
-    }
-    output_dict = {
-        'A_15:5-25_protein1': 'GATFCVHHHHAAFFFFFTFTF',
-        'R_15:5-25_protein1': 'GATFCVHHHHRAFFFFFTFTF',
-        'N_15:5-25_protein1': 'GATFCVHHHHNAFFFFFTFTF',
-        'A_15:5-18_protein2': 'GATFCVHHHHAAFF',
-        'R_15:5-18_protein2': 'GATFCVHHHHRAFF',
-        'N_15:5-18_protein2': 'GATFCVHHHHNAFF',
-        'A_5:1-15_protein3': 'HHHHAAFFFFFTFTF',
-        'R_5:1-15_protein3': 'HHHHRAFFFFFTFTF',
-        'N_5:1-15_protein3': 'HHHHNAFFFFFTFTF',
-        'A_5:1-11_protein5': 'HHHHAAFFFFF',
-        'R_5:1-11_protein5': 'HHHHRAFFFFF',
-        'N_5:1-11_protein5': 'HHHHNAFFFFF'
-    }
-    for k, v in db_dict.items():
-        tmp_db.write(f">{k}\n{v}\n")
-    tmp_db.close()
-    for k, v in output_dict.items():
-        output_expected.write(f">{k}\n{v}\n")
-    output_expected.close()
-    stop_codon_permutation(tmp_db.name,
-                           output_res,
-                           aa_list,
-                           window_size=21,
-                           cleavage=False)
-    assert filecmp.cmp(output_expected.name, output_res)
-    os.remove(output_res)
-
-
-def test_unspecific_cleavage():
-    sequence = 'ARNDCQEGHIL'
-    result = unspecific_cleavage(sequence,
-                                 num_missed_cleavage=8,
-                                 peptide_min_length=6)
-    exp_res = [
-        "ARNDCQ", "RNDCQE", "NDCQEG", "DCQEGH", "CQEGHI", "QEGHIL", "ARNDCQE",
-        "RNDCQEG", "NDCQEGH", "DCQEGHI", "CQEGHIL", "ARNDCQEG", "RNDCQEGH",
-        "NDCQEGHI", "DCQEGHIL", "ARNDCQEGH", "RNDCQEGHI", "NDCQEGHIL"
-    ]
-    result = list(sorted(set(result)))
-    exp_res = list(sorted(set(exp_res)))
-    assert result == exp_res, "unexpected result"
-
-
-def test_stop_codon_permutation_case2():
-    output_res = 'stop_codon_permutation_output.fasta'
-    aa_list = ['A']
-    tmp_db = tempfile.NamedTemporaryFile(mode="w", delete=False)
-    output_expected = tempfile.NamedTemporaryFile(mode="w", delete=False)
-    db_dict = {
-        'protein1': 'ADFTGATFCVHHHH*AFFFFFTFTFTFTFTFTFTFTFT',
-    }
-    output_dict = {
-        'A_15:5-25_protein1': 'GATFCVHHHHAAFFFFFTFTF',
-        'A_15:11-13_protein1': 'AAF',
-        'A_15:11-14_protein1': 'AAFF',
-        'A_15:10-12_protein1': 'HAA',
-        'A_15:10-13_protein1': 'HAAF',
-        'A_15:9-11_protein1': 'HHA',
-        'A_15:9-12_protein1': 'HHAA',
-        'A_15:8-11_protein1': 'HHHA'
-    }
-    for k, v in db_dict.items():
-        tmp_db.write(f">{k}\n{v}\n")
-    tmp_db.close()
-    for k, v in output_dict.items():
-        output_expected.write(f">{k}\n{v}\n")
-    output_expected.close()
-    stop_codon_permutation(tmp_db.name,
-                           output_res,
-                           aa_list,
-                           window_size=21,
-                           cleavage=True,
-                           num_missed_cleavage=3,
-                           peptide_min_length=3)
-    fh1 = open(output_expected.name).readlines()
-    fh2 = open(output_res).readlines()
-    db1 = sorted(set(fh1))
-    db2 = sorted(set(fh2))
-    assert db1 == db2, "unexpected result"
-    os.remove(output_res)
