@@ -7,9 +7,6 @@ import argparse
 import tempfile
 import warnings
 
-from pyteomics import parser
-
-import numpy as np
 import pandas as pd
 import pybedtools
 from Bio import SeqIO
@@ -422,77 +419,6 @@ def genomic_to_cds_coords(lintersect_df,
     output.close()
     for k in warnings.keys():
         print(k)
-
-
-def stop_codon_permutation(protein_fasta,
-                           output_fasta,
-                           aa_list,
-                           window_size=21,
-                           cleavage=True,
-                           **kwards):
-    database = SeqIO.index(protein_fasta, 'fasta')
-    output = open(output_fasta, "w")
-    for key, value in database.items():
-        seq = str(value.seq).strip('*')
-        position = None
-        if '*' in seq:
-            positions = np.where([x == '*' for x in seq])[0]
-            try:
-                if positions[1] - positions[0] < (window_size - 1) / 2:
-                    seq = seq[:positions[1]]
-            except IndexError:
-                pass
-            position = positions[0]
-            if position - (window_size - 1) / 2 + 1 < 0:
-                start = 0
-            else:
-                start = int(position - (window_size - 1) / 2)
-            if len(seq) - position + 1 < (window_size - 1) / 2:
-                end = len(seq)
-            else:
-                end = int(position + (window_size - 1) / 2 + 1)
-            new_seqs = []
-            cleaved_towrite = []
-            for aa in aa_list:
-                new_seq = seq[start:position] + aa + seq[position + 1:end]
-                new_pos = position - start
-                header = '>' + f'{aa}_{position+1}:{start+1}-{end}_' + key
-                new_seqs.append(header)
-                new_seqs.append(new_seq)
-                if cleavage:
-                    cleaved_seqs = unspecific_cleavage(new_seq, **kwards)
-                    for c_seq in cleaved_seqs:
-                        c_start = new_seq.index(c_seq)
-                        c_end = c_start + len(c_seq)
-                        if c_start <= new_pos < c_end:
-                            if aa == '':
-                                cheader = '>' + f'skip_{position+1}:{c_start + 1}-{c_end}_' + key
-                            else:
-                                cheader = '>' + f'{aa}_{position+1}:{c_start + 1}-{c_end}_' + key
-                            cleaved_towrite.append(cheader)
-                            cleaved_towrite.append(c_seq)
-            # output.write('\n'.join(new_seqs) + '\n')
-            if cleavage:
-                output.write('\n'.join(cleaved_towrite) + '\n')
-    output.close()
-
-
-def unspecific_cleavage(sequence,
-                        num_missed_cleavage=11,
-                        peptide_min_length=8,
-                        rule="([^\\*])"):
-    """
-        Cleaves protein sequences into a list of unique peptides.
-        for more about pyteomics.parser.cleave and cleavage rules:
-        <https://pythonhosted.org/pyteomics/api/parser.html>
-    """
-    parser.expasy_rules['new_enzyme'] = rule
-    peptide_set = parser.cleave(
-        sequence=sequence,
-        rule=parser.expasy_rules['new_enzyme'],
-        missed_cleavages=num_missed_cleavage,
-        min_length=peptide_min_length)
-    return list(peptide_set)
 
 
 def main(arguments):
